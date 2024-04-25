@@ -1,4 +1,5 @@
 class Task {
+  // Variables que representan las propiedades de una tarea
   int? id;
   String? title;
   String? note;
@@ -10,6 +11,7 @@ class Task {
   int? remind;
   String? repeat;
 
+  // Constructor sin parámetros
   Task({
     this.id,
     this.title,
@@ -23,6 +25,7 @@ class Task {
     this.repeat,
   });
 
+  // Constructor que crea una instancia de Task a partir de un mapa JSON
   Task.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
@@ -35,7 +38,8 @@ class Task {
     remind = json['remind'];
     repeat = json['repeat'];
   }
-  
+
+  // Método que devuelve un mapa JSON a partir de una instancia de Task
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
