@@ -136,6 +136,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           onPressed: () {
                             // Función que se ejecuta cuando se presiona el botón
                             _getTimeFromUser(isStartTime: true);
+                            
                           },
                           icon: const Icon(
                             // Icono que se muestra en el botón
@@ -295,6 +296,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
       // Agrega la tarea a la base de datos y regresa a la pantalla anterior
       _addTaskToDb();
       Get.back();
+      Get.snackbar("Success", "Task Saved!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.white,
+          colorText: yellowClr,
+          icon: const Icon(Icons.check_circle_outline));
+          
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       // Si alguno de los campos está vacío, muestra un snackbar con un mensaje de error
       Get.snackbar("Required", "All fields are required!",
@@ -430,17 +437,17 @@ class _AddTaskPageState extends State<AddTaskPage> {
 // Solicita al usuario que seleccione una hora y la guarda en la variable correspondiente
   _getTimeFromUser({required bool isStartTime}) async {
     // Muestra el cuadro de diálogo del selector de tiempo
-    TimeOfDay? pickedTime = await _showTimePicker();
+    var pickedTime = await _showTimePicker();
+    String _formattedTime = pickedTime!.format(context);
     if (pickedTime == null) {
       // Si el usuario cancela la selección, imprime un mensaje en la consola
       print("Time cancelled");
     } else {
-      // Formatea la hora seleccionada en formato "HH:mm"
-      String _formattedTime = "${pickedTime.hour}:${pickedTime.minute}";
       if (isStartTime) {
         // Si se está seleccionando la hora de inicio, actualiza la variable _startTime
         setState(() {
           _startTime = _formattedTime;
+          print(_startTime);
         });
       } else {
         // Si se está seleccionando la hora de fin, actualiza la variable _endTime

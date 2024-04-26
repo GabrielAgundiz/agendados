@@ -43,6 +43,7 @@ dependencies:
   flutter_local_notifications:
   flutter_timezone:
   sqflite:
+  flutter_staggered_animations:
 
 dev_dependencies:
   flutter_test:
