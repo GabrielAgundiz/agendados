@@ -1,7 +1,6 @@
 // Importación de paquetes y servicios necesarios
 import 'package:agendados/controllers/task_controller.dart';
 import 'package:agendados/models/task.dart';
-import 'package:agendados/services/notification_services.dart';
 import 'package:agendados/services/theme_services.dart';
 import 'package:agendados/ui/add_task_bar.dart';
 import 'package:agendados/ui/theme.dart';
@@ -40,7 +39,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _taskController.getTasks();
-
     return Scaffold(
       // AppBar personalizado
       appBar: _appBar(),
@@ -299,7 +297,6 @@ class _HomePageState extends State<HomePage> {
 
   // Método que devuelve la barra de fechas
   _addDateBar() {
-    
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 20),
       child: Container(
@@ -340,8 +337,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-
 
   _addTaskBar() {
     // Devuelve un widget Padding que agrega un padding horizontal de 20 unidades a su hijo
