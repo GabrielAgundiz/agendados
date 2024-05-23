@@ -4,6 +4,7 @@ import 'package:agendados/ui/theme.dart';
 import 'package:agendados/ui/widgets/button.dart';
 import 'package:agendados/ui/widgets/input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -58,6 +59,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   // Valor seleccionado por el usuario para el color de la tarea
   int _selectedColor = 0;
+
+  // Inicialización del plugin de notificaciones locales
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeNotification();
+  }
 
   // Sobreescribe el método build para construir la interfaz de usuario
   @override
@@ -136,7 +147,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           onPressed: () {
                             // Función que se ejecuta cuando se presiona el botón
                             _getTimeFromUser(isStartTime: true);
-                            
                           },
                           icon: const Icon(
                             // Icono que se muestra en el botón
@@ -301,7 +311,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
           backgroundColor: Colors.white,
           colorText: yellowClr,
           icon: const Icon(Icons.check_circle_outline));
-          
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       // Si alguno de los campos está vacío, muestra un snackbar con un mensaje de error
       Get.snackbar("Required", "All fields are required!",
@@ -326,13 +335,53 @@ class _AddTaskPageState extends State<AddTaskPage> {
       color: _selectedColor,
       isCompleted: 0,
     );
+
     // Agrega la nueva tarea a la base de datos y guarda el ID de la tarea en la variable value
     int value = await _taskController.addTask(task: newTask);
     // Imprime el ID de la tarea en la consola
     print("My id is " + "$value");
+
+    // Llama a la función para mostrar la notificación
+    if (_selectedRemind != null) {
+      _scheduleNotification();
+    }
   }
 
-// Devuelve un widget Column que contiene un título y un Wrap con 4 CircleAvatar widgets
+  // Muestra la notificación configurada
+  void _scheduleNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      "channelId",
+      "channelName",
+      channelDescription: "Recordatorio de tarea",
+      importance: Importance.max,
+      priority: Priority.high,
+      icon: 'tarea', // Nombre correcto del ícono de la tarea
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      _titleController.text,
+      "Remember to ${_titleController.text}!",
+      platformChannelSpecifics,
+    );
+  }
+
+// Inicializa las configuraciones de notificaciones
+  void _initializeNotification() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings(
+            'tarea'); // Nombre correcto del ícono de la tarea
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  // Devuelve un widget Column que contiene un título y un Wrap con 4 CircleAvatar widgets
   _colorPallete() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,9 +431,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
-// Devuelve un widget AppBar con las siguientes propiedades:
-// - elevation: 0 (no hay sombra)
-// - backgroundColor: el color de fondo actual del contexto
+  // Devuelve un widget AppBar con las siguientes propiedades:
+  // - elevation: 0 (no hay sombra)
+  // - backgroundColor: el color de fondo actual del contexto
   _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
@@ -415,7 +464,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
-// Solicita al usuario que seleccione una fecha y la guarda en la variable _selectedDate
+  // Solicita al usuario que seleccione una fecha y la guarda en la variable _selectedDate
   _getDateFromUser() async {
     // Muestra el cuadro de diálogo del selector de fecha
     DateTime? _pickerDate = await showDatePicker(
@@ -434,7 +483,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-// Solicita al usuario que seleccione una hora y la guarda en la variable correspondiente
+  // Solicita al usuario que seleccione una hora y la guarda en la variable correspondiente
   _getTimeFromUser({required bool isStartTime}) async {
     // Muestra el cuadro de diálogo del selector de tiempo
     var pickedTime = await _showTimePicker();
@@ -458,7 +507,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-// Muestra el cuadro de diálogo del selector de tiempo
+  // Muestra el cuadro de diálogo del selector de tiempo
   Future<TimeOfDay?> _showTimePicker() {
     // Devuelve el resultado de mostrar el selector de tiempo
     return showTimePicker(
