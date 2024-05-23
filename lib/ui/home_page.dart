@@ -80,6 +80,7 @@ class _HomePageState extends State<HomePage> {
             itemCount: _taskController.taskList.length,
             itemBuilder: (_, index) {
               Task task = _taskController.taskList[index];
+              print(task.toJson());
               if (task.repeat == 'Daily') {
                 return AnimationConfiguration.staggeredList(
                   position: index,
@@ -98,6 +99,77 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 );
+              }
+              if (task.repeat == 'Weekly') {
+                // Ajusta el formato de la fecha según el formato de tus fechas
+                DateFormat dateFormat = DateFormat("MM/dd/yyyy");
+
+                // Usa directamente el valor de `task.date` y `_selectedDate`
+                String taskDateString = task.date.toString();
+                String currentDateString =
+                    DateFormat('MM/dd/yyyy').format(_selectedDate);
+
+                DateTime taskDate = dateFormat.parse(taskDateString);
+                DateTime currentDate = dateFormat.parse(currentDateString);
+
+                DateTime adjustedCurrentDate = currentDate.add(Duration(
+                    days: 7 *
+                        ((currentDate.weekday - taskDate.weekday + 7) % 7)));
+
+                if (adjustedCurrentDate.year == currentDate.year &&
+                    adjustedCurrentDate.month == currentDate.month &&
+                    adjustedCurrentDate.day == currentDate.day) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    child: SlideAnimation(
+                      child: FadeInAnimation(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                _showBottomSheet(context, task);
+                              },
+                              child: TaskTile(task),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }
+              if (task.repeat == 'Monthly') {
+                // Ajusta el formato de la fecha según el formato de tus fechas
+                DateFormat dateFormat = DateFormat("MM/dd/yyyy");
+
+                // Usa directamente el valor de `task.date` y `_selectedDate`
+                String taskDateString = task.date.toString();
+                String currentDateString =
+                    DateFormat('MM/dd/yyyy').format(_selectedDate);
+
+                DateTime taskDate = dateFormat.parse(taskDateString);
+                DateTime currentDate = dateFormat.parse(currentDateString);
+
+                // Verifica si el día del mes y el mes son iguales
+                if (taskDate.day == currentDate.day) {
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    child: SlideAnimation(
+                      child: FadeInAnimation(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                _showBottomSheet(context, task);
+                              },
+                              child: TaskTile(task),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
               }
               if (task.date == DateFormat.yMd().format(_selectedDate)) {
                 return AnimationConfiguration.staggeredList(
@@ -162,6 +234,14 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 _taskController.delete(task);
                 Get.back();
+                Get.snackbar("Deleted", "Task was deleted successfully",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.white,
+                    colorText: greenClr,
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: greenClr,
+                    ));
               },
               clr: Colors.red[400]!,
               context: context,
@@ -255,9 +335,9 @@ class _HomePageState extends State<HomePage> {
           ),
           // Función que se llama cuando se cambia la fecha
           onDateChange: (date) {
-           setState(() {
+            setState(() {
               _selectedDate = date;
-           });
+            });
           },
         ),
       ),
@@ -314,7 +394,10 @@ class _HomePageState extends State<HomePage> {
         onTap: () {
           // Cambia el tema entre claro y oscuro
           ThemeService().switchTheme();
-
+          //   notifyHelper.displayNotification(
+          //     title: "Tapped",
+          //      body: "Notifies works"
+          //     );
           // Muestra un snackbar en la parte inferior de la pantalla
           // con el mensaje "Theme Changed" y un ícono que indica
           // si se activó el tema claro o oscuro

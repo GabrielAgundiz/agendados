@@ -14,7 +14,7 @@ class NotifyHelper {
   initializeNotification() async {
     tz.initializeTimeZones(); // Inicializa las zonas horarias
     final AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings("appicon"); // Configuración para Android
+         AndroidInitializationSettings("appicon"); // Configuración para Android
 
     final InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid); // Configuración general
@@ -50,8 +50,15 @@ class NotifyHelper {
         importance: Importance.max, // Prioridad máxima para la notificación
         priority: Priority.high, // Prioridad alta para la notificación
         icon: 'appicon', // Icono de la notificación
-        sound: RawResourceAndroidNotificationSound('notification_sound')); // Sonido de la notificación
+        sound: RawResourceAndroidNotificationSound('raw/default_sound.mp3')); // Sonido de la notificación
+
+    var platformChannelSpecifics = new NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
     // Aquí se debería llamar a show() con los detalles de la notificación, pero falta en el código proporcionado
+    await flutterLocalNotificationsPlugin.show(
+      0, title, body, platformChannelSpecifics, payload: 'default_sound'
+    );
   }
 
   // Método para programar una notificación
