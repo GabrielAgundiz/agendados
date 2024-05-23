@@ -347,39 +347,47 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-  // Muestra la notificación configurada
-  void _scheduleNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      "channelId",
-      "channelName",
-      channelDescription: "Recordatorio de tarea",
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: 'tarea', // Nombre correcto del ícono de la tarea
-    );
+ // Muestra la notificación configurada
+void _scheduleNotification() async {
+  // Detalles específicos de la notificación para Android
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    "channelId", // ID del canal de notificación
+    "channelName", // Nombre del canal de notificación
+    channelDescription: "Recordatorio de tarea", // Descripción del canal
+    importance: Importance.max, // Importancia máxima para la notificación
+    priority: Priority.high, // Alta prioridad para la notificación
+    icon: 'tarea', // Nombre del ícono de la tarea
+  );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      _titleController.text,
-      "Remember to ${_titleController.text}!",
-      platformChannelSpecifics,
-    );
-  }
+  // Detalles específicos de la notificación para todas las plataformas
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  // Muestra la notificación con los detalles configurados
+  await flutterLocalNotificationsPlugin.show(
+    0, // ID de la notificación
+    _titleController.text, // Título de la notificación
+    "Remember to ${_titleController.text}!", // Cuerpo de la notificación
+    platformChannelSpecifics, // Detalles específicos de la plataforma
+  );
+}
+
 
 // Inicializa las configuraciones de notificaciones
-  void _initializeNotification() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings(
-            'tarea'); // Nombre correcto del ícono de la tarea
+void _initializeNotification() async {
+  // Configuraciones de inicialización específicas para Android
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('tarea'); // Nombre correcto del ícono de la tarea
 
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+  // Configuraciones de inicialización para todas las plataformas
+  final InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
+  // Inicializa el plugin de notificaciones con las configuraciones especificadas
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
+
 
   // Devuelve un widget Column que contiene un título y un Wrap con 4 CircleAvatar widgets
   _colorPallete() {

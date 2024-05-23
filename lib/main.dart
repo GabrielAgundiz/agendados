@@ -1,10 +1,8 @@
 import 'package:agendados/db/db_helper.dart';
-import 'package:agendados/services/notification_services.dart';
 import 'package:agendados/ui/home_page.dart';
 import 'package:agendados/ui/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:agendados/services/theme_services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 

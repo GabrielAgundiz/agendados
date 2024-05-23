@@ -65,25 +65,81 @@ class _HomePageState extends State<HomePage> {
   }
 
   _showTasks() {
+    // Se crea un widget Expanded para ocupar el espacio disponible
     return Expanded(
+      // Obx es un widget de GetX que permite la reactividad
       child: Obx(() {
+        // ListView.builder crea una lista de elementos de forma dinámica
         return ListView.builder(
-            itemCount: _taskController.taskList.length,
-            itemBuilder: (_, index) {
-              Task task = _taskController.taskList[index];
-              print(task.toJson());
-              if (task.repeat == 'Daily') {
+          itemCount:
+              _taskController.taskList.length, // Número de tareas en la lista
+          itemBuilder: (_, index) {
+            Task task =
+                _taskController.taskList[index]; // Se obtiene la tarea actual
+            print(task
+                .toJson()); // Se imprime la tarea en formato JSON para debug
+
+            // Si la tarea se repite diariamente
+            if (task.repeat == 'Daily') {
+              // Se configura una animación para la lista
+              return AnimationConfiguration.staggeredList(
+                position: index, // Posición del elemento en la lista
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _showBottomSheet(context,
+                                task); // Muestra un BottomSheet al hacer tap
+                          },
+                          child: TaskTile(task,
+                              _selectedDate), // Muestra la tarea en un TaskTile
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            // Si la tarea se repite semanalmente
+            if (task.repeat == 'Weekly') {
+              // Se define el formato de fecha
+              DateFormat dateFormat = DateFormat("MM/dd/yyyy");
+
+              // Se convierte la fecha de la tarea y la fecha seleccionada a String
+              String taskDateString = task.date.toString();
+              String currentDateString =
+                  DateFormat('MM/dd/yyyy').format(_selectedDate);
+
+              // Se parsean las fechas de String a DateTime
+              DateTime taskDate = dateFormat.parse(taskDateString);
+              DateTime currentDate = dateFormat.parse(currentDateString);
+
+              // Se ajusta la fecha actual a la siguiente ocurrencia semanal de la tarea
+              DateTime adjustedCurrentDate = currentDate.add(Duration(
+                  days:
+                      7 * ((currentDate.weekday - taskDate.weekday + 7) % 7)));
+
+              // Si la fecha ajustada coincide con la fecha actual
+              if (adjustedCurrentDate.year == currentDate.year &&
+                  adjustedCurrentDate.month == currentDate.month &&
+                  adjustedCurrentDate.day == currentDate.day) {
+                // Se configura una animación para la lista
                 return AnimationConfiguration.staggeredList(
-                  position: index,
+                  position: index, // Posición del elemento en la lista
                   child: SlideAnimation(
                     child: FadeInAnimation(
                       child: Row(
                         children: [
                           GestureDetector(
                             onTap: () {
-                              _showBottomSheet(context, task);
+                              _showBottomSheet(context,
+                                  task); // Muestra un BottomSheet al hacer tap
                             },
-                            child: TaskTile(task, _selectedDate),
+                            child: TaskTile(task,
+                                _selectedDate), // Muestra la tarea en un TaskTile
                           ),
                         ],
                       ),
@@ -91,169 +147,159 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               }
+            }
 
-              if (task.repeat == 'Weekly') {
-                // Ajusta el formato de la fecha según el formato de tus fechas
-                DateFormat dateFormat = DateFormat("MM/dd/yyyy");
+            // Si la tarea se repite mensualmente
+            if (task.repeat == 'Monthly') {
+              // Se define el formato de fecha
+              DateFormat dateFormat = DateFormat("MM/dd/yyyy");
 
-                // Usa directamente el valor de `task.date` y `_selectedDate`
-                String taskDateString = task.date.toString();
-                String currentDateString =
-                    DateFormat('MM/dd/yyyy').format(_selectedDate);
+              // Se convierte la fecha de la tarea y la fecha seleccionada a String
+              String taskDateString = task.date.toString();
+              String currentDateString =
+                  DateFormat('MM/dd/yyyy').format(_selectedDate);
 
-                DateTime taskDate = dateFormat.parse(taskDateString);
-                DateTime currentDate = dateFormat.parse(currentDateString);
+              // Se parsean las fechas de String a DateTime
+              DateTime taskDate = dateFormat.parse(taskDateString);
+              DateTime currentDate = dateFormat.parse(currentDateString);
 
-                DateTime adjustedCurrentDate = currentDate.add(Duration(
-                    days: 7 *
-                        ((currentDate.weekday - taskDate.weekday + 7) % 7)));
-
-                if (adjustedCurrentDate.year == currentDate.year &&
-                    adjustedCurrentDate.month == currentDate.month &&
-                    adjustedCurrentDate.day == currentDate.day) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    child: SlideAnimation(
-                      child: FadeInAnimation(
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _showBottomSheet(context, task);
-                              },
-                              child: TaskTile(task, _selectedDate),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-              if (task.repeat == 'Monthly') {
-                // Ajusta el formato de la fecha según el formato de tus fechas
-                DateFormat dateFormat = DateFormat("MM/dd/yyyy");
-
-                // Usa directamente el valor de `task.date` y `_selectedDate`
-                String taskDateString = task.date.toString();
-                String currentDateString =
-                    DateFormat('MM/dd/yyyy').format(_selectedDate);
-
-                DateTime taskDate = dateFormat.parse(taskDateString);
-                DateTime currentDate = dateFormat.parse(currentDateString);
-
-                // Verifica si el día del mes y el mes son iguales
-                if (taskDate.day == currentDate.day) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    child: SlideAnimation(
-                      child: FadeInAnimation(
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                _showBottomSheet(context, task);
-                              },
-                              child: TaskTile(task, _selectedDate),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-              if (task.date == DateFormat.yMd().format(_selectedDate)) {
+              // Si el día del mes de la tarea coincide con el día del mes actual
+              if (taskDate.day == currentDate.day) {
+                // Se configura una animación para la lista
                 return AnimationConfiguration.staggeredList(
-                  position: index,
+                  position: index, // Posición del elemento en la lista
                   child: SlideAnimation(
                     child: FadeInAnimation(
                       child: Row(
                         children: [
                           GestureDetector(
                             onTap: () {
-                              _showBottomSheet(context, task);
+                              _showBottomSheet(context,
+                                  task); // Muestra un BottomSheet al hacer tap
                             },
-                            child: TaskTile(task, _selectedDate),
+                            child: TaskTile(task,
+                                _selectedDate), // Muestra la tarea en un TaskTile
                           ),
                         ],
                       ),
                     ),
                   ),
                 );
-              } else {
-                return Container();
               }
-            });
+            }
+
+            // Si la fecha de la tarea coincide exactamente con la fecha seleccionada
+            if (task.date == DateFormat.yMd().format(_selectedDate)) {
+              // Se configura una animación para la lista
+              return AnimationConfiguration.staggeredList(
+                position: index, // Posición del elemento en la lista
+                child: SlideAnimation(
+                  child: FadeInAnimation(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _showBottomSheet(context,
+                                task); // Muestra un BottomSheet al hacer tap
+                          },
+                          child: TaskTile(task,
+                              _selectedDate), // Muestra la tarea en un TaskTile
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              // Si no hay coincidencia, se devuelve un contenedor vacío
+              return Container();
+            }
+          },
+        );
       }),
     );
   }
 
   _showBottomSheet(BuildContext context, Task task) {
+    // Muestra un BottomSheet en la parte inferior de la pantalla
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4), // Espaciado superior
         height: task.isCompleted == 1
-            ? MediaQuery.of(context).size.height * 0.24
-            : MediaQuery.of(context).size.height * 0.31,
-        color: Get.isDarkMode ? darkGreyClr : Colors.white,
+            ? MediaQuery.of(context).size.height *
+                0.24 // Altura si la tarea está completada
+            : MediaQuery.of(context).size.height *
+                0.31, // Altura si la tarea no está completada
+        color: Get.isDarkMode
+            ? darkGreyClr
+            : Colors.white, // Color según el modo (oscuro o claro)
         child: Column(
           children: [
+            // Barra indicadora para arrastrar el BottomSheet
             Container(
               height: 6,
               width: 120,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+                borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                color: Get.isDarkMode
+                    ? Colors.grey[600]
+                    : Colors.grey[300], // Color según el modo
+              ),
             ),
-            const Spacer(),
+            const Spacer(), // Espacio flexible
+            // Verifica si la tarea está completada y si la fecha de completado es hoy
             task.isCompleted == 1 &&
                     task.completionDate ==
                         DateFormat('yyyy-MM-dd').format(DateTime.now())
-                ? Container()
+                ? Container() // Si es así, no muestra el botón de "Task Completed"
                 : _bottomSheetButton(
                     label: "Task Completed",
                     onTap: () {
-                      _taskController.markTaskCompleted(task.id!);
-                      Get.back();
+                      _taskController.markTaskCompleted(
+                          task.id!); // Marca la tarea como completada
+                      Get.back(); // Cierra el BottomSheet
                     },
-                    clr: primaryClr,
+                    clr: primaryClr, // Color del botón
                     context: context,
                   ),
             const SizedBox(
-              height: 10,
+              height: 10, // Espaciado entre botones
             ),
+            // Botón para eliminar la tarea
             _bottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _taskController.delete(task);
-                Get.back();
+                _taskController.delete(task); // Elimina la tarea
+                Get.back(); // Cierra el BottomSheet
+                // Muestra una notificación de que la tarea fue eliminada
                 Get.snackbar("Deleted", "Task was deleted successfully",
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: Colors.white,
-                    colorText: greenClr,
+                    snackPosition:
+                        SnackPosition.BOTTOM, // Posición de la notificación
+                    backgroundColor: Colors.white, // Color de fondo
+                    colorText: greenClr, // Color del texto
                     icon: const Icon(
-                      Icons.delete_outline,
+                      Icons.delete_outline, // Icono de la notificación
                       color: greenClr,
                     ));
               },
-              clr: Colors.red[400]!,
+              clr: Colors.red[400]!, // Color del botón
               context: context,
             ),
             const SizedBox(
-              height: 20,
+              height: 20, // Espaciado entre botones
             ),
+            // Botón para cerrar el BottomSheet
             _bottomSheetButton(
               label: "Close",
               onTap: () {
-                Get.back();
+                Get.back(); // Cierra el BottomSheet
               },
-              clr: Colors.red[400]!,
-              isClose: true,
+              clr: Colors.red[400]!, // Color del botón
+              isClose: true, // Indica que este botón es para cerrar
               context: context,
             ),
             const SizedBox(
-              height: 10,
+              height: 10, // Espaciado final
             ),
           ],
         ),
@@ -262,35 +308,44 @@ class _HomePageState extends State<HomePage> {
   }
 
   _bottomSheetButton({
-    required String label,
-    required Function()? onTap,
-    required Color clr,
-    bool isClose = false,
-    required BuildContext context,
+    required String label, // Etiqueta del botón
+    required Function()?
+        onTap, // Función que se ejecutará al presionar el botón
+    required Color clr, // Color del botón
+    bool isClose = false, // Indica si el botón es para cerrar
+    required BuildContext context, // Contexto de la aplicación
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap:
+          onTap, // Se llama a la función pasada cuando el botón es presionado
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        height: 55,
-        width: MediaQuery.of(context).size.width * 0.9,
+        margin: const EdgeInsets.symmetric(
+            vertical: 4), // Margen vertical del botón
+        height: 55, // Altura del botón
+        width: MediaQuery.of(context).size.width *
+            0.9, // Ancho del botón como el 90% del ancho de la pantalla
         decoration: BoxDecoration(
           border: Border.all(
-              width: 2,
-              color: isClose == true
-                  ? Get.isDarkMode
-                      ? Colors.grey[600]!
-                      : Colors.grey[300]!
-                  : clr),
-          borderRadius: BorderRadius.circular(20),
-          color: isClose == true ? Colors.transparent : clr,
+              width: 2, // Ancho del borde
+              color: isClose == true // Si el botón es para cerrar
+                  ? Get.isDarkMode // Dependiendo del modo (oscuro o claro)
+                      ? Colors.grey[600]! // Color del borde en modo oscuro
+                      : Colors.grey[300]! // Color del borde en modo claro
+                  : clr // Si no es para cerrar, usa el color proporcionado
+              ),
+          borderRadius: BorderRadius.circular(20), // Bordes redondeados
+          color: isClose == true ? Colors.transparent : clr, // Color de fondo
         ),
         child: Center(
-            child: Text(
-          label,
-          style:
-              isClose ? titleStyle : titleStyle.copyWith(color: Colors.white),
-        )),
+          child: Text(
+            label, // Texto del botón
+            style: isClose // Si el botón es para cerrar
+                ? titleStyle // Estilo del título
+                : titleStyle.copyWith(
+                    color: Colors
+                        .white), // Estilo del título con color blanco para el texto
+          ),
+        ),
       ),
     );
   }

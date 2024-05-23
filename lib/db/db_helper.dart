@@ -58,20 +58,31 @@ class DBHelper {
     return await _db?.insert(_tableName, task!.toJson()) ?? 1;
   }
 
-  static Future<List<Map<String, dynamic>>> query() async {
-    return await _db!.query(_tableName);
-  }
+ // Consulta todas las filas de la tabla y devuelve una lista de mapas
+static Future<List<Map<String, dynamic>>> query() async {
+  // Ejecuta una consulta SELECT en la tabla y devuelve el resultado
+  return await _db!.query(_tableName);
+}
 
-  static delete(Task task) async {
-    return await _db!.delete(_tableName, where: 'id=?', whereArgs: [task.id]);
-  }
+// Elimina una tarea específica de la tabla
+static delete(Task task) async {
+  // Ejecuta una instrucción DELETE en la tabla donde el id coincide con el de la tarea
+  return await _db!.delete(
+    _tableName, // Nombre de la tabla
+    where: 'id=?', // Condición para identificar la fila a eliminar
+    whereArgs: [task.id], // Argumento de la condición (id de la tarea)
+  );
+}
 
-  static Future<int> update(int id, Map<String, dynamic> values) async {
-    return await _db!.update(
-      _tableName,
-      values,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
+// Actualiza una fila específica de la tabla con los valores proporcionados
+static Future<int> update(int id, Map<String, dynamic> values) async {
+  // Ejecuta una instrucción UPDATE en la tabla
+  return await _db!.update(
+    _tableName, // Nombre de la tabla
+    values, // Valores nuevos para actualizar la fila
+    where: 'id = ?', // Condición para identificar la fila a actualizar
+    whereArgs: [id], // Argumento de la condición (id de la fila a actualizar)
+  );
+}
+
 }
