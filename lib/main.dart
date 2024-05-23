@@ -12,13 +12,10 @@ import 'package:get_storage/get_storage.dart';
 Future<void> main() async {
   // Asegura que los widgets estén inicializados antes de ejecutar cualquier código asíncrono
   WidgetsFlutterBinding.ensureInitialized();
-
   // Inicializa el almacenamiento local con GetStorage
   await GetStorage.init();
-
   // Inicializa la base de datos con DBHelper
   await DBHelper.initDb();
-
   // Llama al método `runApp` y pasa la instancia de MyApp
   runApp(const MyApp());
 }
@@ -26,11 +23,9 @@ Future<void> main() async {
 // Clase MyApp que extiende de StatelessWidget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // Método que construye el widget de la aplicación
   @override
   Widget build(BuildContext context) {
-  
     return GetMaterialApp(
         title: 'Agenda2',
         // Oculta el banner de depuración
@@ -44,8 +39,4 @@ class MyApp extends StatelessWidget {
         // Establece la página de inicio en HomePage
         home: HomePage());
   }
-
-
 }
-
-
