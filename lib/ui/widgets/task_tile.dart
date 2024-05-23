@@ -2,10 +2,17 @@ import 'package:agendados/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:agendados/ui/theme.dart';
+import 'package:intl/intl.dart';
 
 class TaskTile extends StatelessWidget {
   final Task? task;
-  TaskTile(this.task);
+  final DateTime selectedDate;
+  TaskTile(this.task, this.selectedDate);
+
+  bool isTaskCompletedOnSelectedDate(Task task, DateTime selectedDate) {
+    String selected = DateFormat('yyyy-MM-dd').format(selectedDate);
+    return task.isCompleted == 1 && task.completionDate == selected;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,6 @@ class TaskTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.all(16),
-        //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: _getBGClr(task?.color ?? 0),
@@ -34,7 +40,7 @@ class TaskTile extends StatelessWidget {
                         color: Color.fromARGB(255, 235, 235, 235)),
                   ),
                 ),
-               const  SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Row(
@@ -45,7 +51,7 @@ class TaskTile extends StatelessWidget {
                       color: Colors.grey[200],
                       size: 18,
                     ),
-                   const  SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       "${task!.startTime} - ${task!.endTime}",
                       style: GoogleFonts.lato(
@@ -55,7 +61,7 @@ class TaskTile extends StatelessWidget {
                     ),
                   ],
                 ),
-               const  SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   task?.note ?? "",
                   style: GoogleFonts.lato(
@@ -74,7 +80,7 @@ class TaskTile extends StatelessWidget {
           RotatedBox(
             quarterTurns: 3,
             child: Text(
-              task!.isCompleted == 1 ? "COMPLETED" : "TO DO",
+              isTaskCompletedOnSelectedDate(task!, selectedDate) ? "COMPLETED" : "TO DO",
               style: GoogleFonts.lato(
                 textStyle: const TextStyle(
                     fontSize: 10,

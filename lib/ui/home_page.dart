@@ -30,12 +30,10 @@ class _HomePageState extends State<HomePage> {
 
   final _taskController = Get.put(TaskController());
 
-
   // Método que se llama cuando se inicializa el widget
   @override
   void initState() {
     super.initState();
- 
   }
 
   // Método que construye la interfaz de usuario
@@ -87,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               _showBottomSheet(context, task);
                             },
-                            child: TaskTile(task),
+                            child: TaskTile(task, _selectedDate),
                           ),
                         ],
                       ),
@@ -95,6 +93,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               }
+
               if (task.repeat == 'Weekly') {
                 // Ajusta el formato de la fecha según el formato de tus fechas
                 DateFormat dateFormat = DateFormat("MM/dd/yyyy");
@@ -124,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                               onTap: () {
                                 _showBottomSheet(context, task);
                               },
-                              child: TaskTile(task),
+                              child: TaskTile(task, _selectedDate),
                             ),
                           ],
                         ),
@@ -157,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                               onTap: () {
                                 _showBottomSheet(context, task);
                               },
-                              child: TaskTile(task),
+                              child: TaskTile(task, _selectedDate),
                             ),
                           ],
                         ),
@@ -177,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               _showBottomSheet(context, task);
                             },
-                            child: TaskTile(task),
+                            child: TaskTile(task, _selectedDate),
                           ),
                         ],
                       ),
@@ -191,77 +190,78 @@ class _HomePageState extends State<HomePage> {
       }),
     );
   }
-_showBottomSheet(BuildContext context, Task task) {
-  Get.bottomSheet(
-    Container(
-      padding: const EdgeInsets.only(top: 4),
-      height: task.isCompleted == 1
-          ? MediaQuery.of(context).size.height * 0.24
-          : MediaQuery.of(context).size.height * 0.31,
-      color: Get.isDarkMode ? darkGreyClr : Colors.white,
-      child: Column(
-        children: [
-          Container(
-            height: 6,
-            width: 120,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
-          ),
-          const Spacer(),
-          task.isCompleted == 1 && task.completionDate == DateFormat('yyyy-MM-dd').format(DateTime.now())
-              ? Container()
-              : _bottomSheetButton(
-                  label: "Task Completed",
-                  onTap: () {
-                    _taskController.markTaskCompleted(task.id!);
-                    Get.back();
-                  },
-                  clr: primaryClr,
-                  context: context,
-                ),
-          const SizedBox(
-            height: 10,
-          ),
-          _bottomSheetButton(
-            label: "Delete Task",
-            onTap: () {
-              _taskController.delete(task);
-              Get.back();
-              Get.snackbar("Deleted", "Task was deleted successfully",
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.white,
-                  colorText: greenClr,
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    color: greenClr,
-                  ));
-            },
-            clr: Colors.red[400]!,
-            context: context,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          _bottomSheetButton(
-            label: "Close",
-            onTap: () {
-              Get.back();
-            },
-            clr: Colors.red[400]!,
-            isClose: true,
-            context: context,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-        ],
+
+  _showBottomSheet(BuildContext context, Task task) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.only(top: 4),
+        height: task.isCompleted == 1
+            ? MediaQuery.of(context).size.height * 0.24
+            : MediaQuery.of(context).size.height * 0.31,
+        color: Get.isDarkMode ? darkGreyClr : Colors.white,
+        child: Column(
+          children: [
+            Container(
+              height: 6,
+              width: 120,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+            ),
+            const Spacer(),
+            task.isCompleted == 1 &&
+                    task.completionDate ==
+                        DateFormat('yyyy-MM-dd').format(DateTime.now())
+                ? Container()
+                : _bottomSheetButton(
+                    label: "Task Completed",
+                    onTap: () {
+                      _taskController.markTaskCompleted(task.id!);
+                      Get.back();
+                    },
+                    clr: primaryClr,
+                    context: context,
+                  ),
+            const SizedBox(
+              height: 10,
+            ),
+            _bottomSheetButton(
+              label: "Delete Task",
+              onTap: () {
+                _taskController.delete(task);
+                Get.back();
+                Get.snackbar("Deleted", "Task was deleted successfully",
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.white,
+                    colorText: greenClr,
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: greenClr,
+                    ));
+              },
+              clr: Colors.red[400]!,
+              context: context,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            _bottomSheetButton(
+              label: "Close",
+              onTap: () {
+                Get.back();
+              },
+              clr: Colors.red[400]!,
+              isClose: true,
+              context: context,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
+    );
+  }
 
   _bottomSheetButton({
     required String label,
@@ -299,6 +299,7 @@ _showBottomSheet(BuildContext context, Task task) {
 
   // Método que devuelve la barra de fechas
   _addDateBar() {
+    
     return Padding(
       padding: const EdgeInsets.only(top: 20, left: 20),
       child: Container(
@@ -339,6 +340,8 @@ _showBottomSheet(BuildContext context, Task task) {
       ),
     );
   }
+
+
 
   _addTaskBar() {
     // Devuelve un widget Padding que agrega un padding horizontal de 20 unidades a su hijo
@@ -420,7 +423,9 @@ _showBottomSheet(BuildContext context, Task task) {
       // Muestra un CircleAvatar y un SizedBox a la derecha del AppBar
       actions: const [
         CircleAvatar(
-          backgroundImage: AssetImage("images/logoagenda.png",) ,
+          backgroundImage: AssetImage(
+            "images/logoagenda.png",
+          ),
         ),
         SizedBox(
           width: 20,
