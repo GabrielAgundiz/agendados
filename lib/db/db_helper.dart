@@ -7,7 +7,7 @@ class DBHelper {
   static Database? _db;
 
   // Versión de la base de datos
-  static final int _version = 1;
+  static final int _version = 2;  // Incrementa la versión de la base de datos
 
   // Nombre de la tabla que se va a crear en la base de datos
   static final String _tableName = "tasks";
@@ -35,8 +35,15 @@ class DBHelper {
               "title STRING, note TEXT, date STRING,"
               "startTime STRING, endTime STRING,"
               "remind INTEGER, repeat STRING,"
-              "color INTEGER, isCompleted INTEGER"
+              "color INTEGER, isCompleted INTEGER,"
+              "completionDate STRING"
               ");");
+        },
+        // Callback que se llama cuando la base de datos necesita ser actualizada
+        onUpgrade: (db, oldVersion, newVersion) async {
+          if (oldVersion < 2) {
+            await db.execute("ALTER TABLE $_tableName ADD COLUMN completionDate STRING;");
+          }
         },
       );
     } catch (e) {
@@ -59,11 +66,12 @@ class DBHelper {
     return await _db!.delete(_tableName, where: 'id=?', whereArgs: [task.id]);
   }
 
-  static update(int id) async {
-    return await _db!.rawUpdate('''
-    UPDATE tasks 
-    SET isCompleted = ?
-    WHERE id = ?
-    ''', [1, id]);
+  static Future<int> update(int id, Map<String, dynamic> values) async {
+    return await _db!.update(
+      _tableName,
+      values,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

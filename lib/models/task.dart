@@ -10,6 +10,7 @@ class Task {
   int? color;
   int? remind;
   String? repeat;
+  String? completionDate;
 
   // Constructor sin parámetros
   Task({
@@ -23,6 +24,7 @@ class Task {
     this.color,
     this.remind,
     this.repeat,
+    this.completionDate,
   });
 
   // Constructor que crea una instancia de Task a partir de un mapa JSON
@@ -37,6 +39,7 @@ class Task {
     color = json['color'];
     remind = json['remind'];
     repeat = json['repeat'];
+    completionDate = json['completionDate'];
   }
 
   // Método que devuelve un mapa JSON a partir de una instancia de Task
@@ -52,6 +55,7 @@ class Task {
     data['color'] = this.color;
     data['remind'] = this.remind;
     data['repeat'] = this.repeat;
+    data['completionDate'] = this.completionDate;
     return data;
   }
 }

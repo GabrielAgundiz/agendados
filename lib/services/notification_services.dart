@@ -11,7 +11,7 @@ class NotifyHelper {
       FlutterLocalNotificationsPlugin();
 
   // Método para inicializar las notificaciones y configurar la zona horaria
-  initializeNotification() async {
+  initializeNotification(context) async {
     tz.initializeTimeZones(); // Inicializa las zonas horarias
     final AndroidInitializationSettings initializationSettingsAndroid =
          AndroidInitializationSettings("appicon"); // Configuración para Android
