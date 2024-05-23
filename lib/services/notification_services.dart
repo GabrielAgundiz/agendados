@@ -73,6 +73,9 @@ class NotifyHelper {
                 'your channel id', 'your channel name')), // Detalles de la notificación para Android
         androidAllowWhileIdle: true, // Permite que la notificación se muestre incluso cuando la app está inactiva
         uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime); // Interpretación de la fecha de la notificación
+            UILocalNotificationDateInterpretation.absoluteTime,
+            matchDateTimeComponents: DateTimeComponents.time,
+            payload: ""
+            ); // Interpretación de la fecha de la notificación
   }
 }

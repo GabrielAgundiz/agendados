@@ -406,7 +406,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       // Muestra un CircleAvatar y un SizedBox a la derecha del AppBar
       actions: const [
         CircleAvatar(
-          backgroundImage: AssetImage("images/profile.png"),
+          backgroundImage: AssetImage("images/logoagenda.png"),
         ),
         SizedBox(
           width: 20,
